@@ -49,4 +49,27 @@ public class InventoryDAOTest {
     List<Inventory> actualInventory = this.inventoryDAO.findAll();
     Assert.assertFalse(actualInventory.isEmpty());
   }
+  
+  /**
+   * Test Create method 
+   */
+  @Test
+  public void create() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    Inventory actualInventoryItem = this.inventoryDAO.create(inventory);
+    Assert.assertEquals(PRODUCT_TYPE, actualInventoryItem.getProductType());
+    Assert.assertEquals(NAME, actualInventoryItem.getName());
+    
+    // Test for more than one inventory 
+    List<Inventory> actualInventory = this.mongoTemplate.findAll(Inventory.class);
+    Assert.assertEquals(1, actualInventory.size());
+    Inventory inventory2 = new Inventory();
+    inventory2.setName(NAME);
+    inventory2.setProductType(PRODUCT_TYPE);
+    this.inventoryDAO.create(inventory2);
+    actualInventory = this.mongoTemplate.findAll(Inventory.class);
+    Assert.assertEquals(2, actualInventory.size());
+  }
 }
