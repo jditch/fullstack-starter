@@ -3,6 +3,7 @@ package com.starter.fullstack.dao;
 import com.starter.fullstack.api.Inventory;
 import com.starter.fullstack.config.EmbedMongoClientOverrideConfig;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Resource;
 import org.junit.After;
 import org.junit.Assert;
@@ -48,6 +49,7 @@ public class InventoryDAOTest {
     inventory.setProductType(PRODUCT_TYPE);
     this.mongoTemplate.save(inventory);
     List<Inventory> actualInventory = this.inventoryDAO.findAll();
+    
     Assert.assertFalse(actualInventory.isEmpty());
   }
   
@@ -61,9 +63,44 @@ public class InventoryDAOTest {
     inventory.setProductType(PRODUCT_TYPE);
     inventory.setId(ID);
     Inventory actualInventoryItem = this.inventoryDAO.create(inventory);
+    
     Assert.assertNotNull(actualInventoryItem);
-    Assert.assertEquals(inventory.getProductType(), actualInventoryItem.getProductType());
     Assert.assertEquals(inventory.getName(), actualInventoryItem.getName());
+    Assert.assertEquals(inventory.getProductType(), actualInventoryItem.getProductType());
     Assert.assertNotEquals(actualInventoryItem.getId(), ID);
+  }
+  
+  /**
+   * Test Delete method where the inventory to be deleted exists
+   */
+  @Test
+  public void deleteInventoryExists() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    this.inventoryDAO.create(inventory);
+    String createdID = inventory.getId();
+    Optional<Inventory> deletedInventory = this.inventoryDAO.delete(createdID);
+    
+    Assert.assertTrue(deletedInventory.isPresent());
+    Assert.assertEquals(inventory.getName(), deletedInventory.get().getName());
+    Assert.assertEquals(inventory.getProductType(), deletedInventory.get().getProductType());
+    Assert.assertEquals(createdID, deletedInventory.get().getId());
+    Assert.assertEquals(0, this.inventoryDAO.findAll().size());
+  }
+  
+  /**
+   * Test Delete method where the inventory with the ID to be deleted does not exist
+   */
+  @Test
+  public void deleteInventoryNotExist() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    this.inventoryDAO.create(inventory);
+    Optional<Inventory> deletedInventory = this.inventoryDAO.delete(ID);
+    
+    Assert.assertFalse(deletedInventory.isPresent());
+    Assert.assertEquals(1, this.inventoryDAO.findAll().size());
   }
 }
