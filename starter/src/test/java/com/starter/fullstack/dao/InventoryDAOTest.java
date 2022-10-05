@@ -78,14 +78,13 @@ public class InventoryDAOTest {
     Inventory inventory = new Inventory();
     inventory.setName(NAME);
     inventory.setProductType(PRODUCT_TYPE);
-    this.inventoryDAO.create(inventory);
-    String createdID = inventory.getId();
-    Optional<Inventory> deletedInventory = this.inventoryDAO.delete(createdID);
+    Inventory createdInventory = this.inventoryDAO.create(inventory);
+    
+    Assert.assertEquals(1, this.inventoryDAO.findAll().size());
+    
+    Optional<Inventory> deletedInventory = this.inventoryDAO.delete(createdInventory.getId());
     
     Assert.assertTrue(deletedInventory.isPresent());
-    Assert.assertEquals(inventory.getName(), deletedInventory.get().getName());
-    Assert.assertEquals(inventory.getProductType(), deletedInventory.get().getProductType());
-    Assert.assertEquals(createdID, deletedInventory.get().getId());
     Assert.assertEquals(0, this.inventoryDAO.findAll().size());
   }
   
