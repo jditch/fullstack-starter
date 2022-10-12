@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -78,6 +79,37 @@ public class InventoryControllerTest {
       .andExpect(status().isOk());
 
     Assert.assertEquals(2, this.mongoTemplate.findAll(Inventory.class).size());
+  }
+  
+  /**
+   * Test delete endpoint where the inventory to be deleted exists
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void deleteInventoryExists() throws Throwable {
+    Assert.assertEquals(1, this.mongoTemplate.findAll(Inventory.class).size());
+    this.mockMvc.perform(delete("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(this.inventory.getId()))
+      .andExpect(status().isOk());
+    
+    Assert.assertEquals(0, this.mongoTemplate.findAll(Inventory.class).size());
+  }
+  
+  /**
+   * Test delete endpoint where the inventory to be deleted does not exist
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void deleteInventoryNotExist() throws Throwable {
+    this.mockMvc.perform(delete("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("fakeID!"))
+      .andExpect(status().isOk());
+    
+    Assert.assertEquals(1, this.mongoTemplate.findAll(Inventory.class).size());
   }
 }
 

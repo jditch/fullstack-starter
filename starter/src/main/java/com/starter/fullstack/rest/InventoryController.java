@@ -5,6 +5,7 @@ import com.starter.fullstack.dao.InventoryDAO;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +46,16 @@ public class InventoryController {
   @PostMapping
   public Inventory create(@Valid @RequestBody Inventory inventory) {
     return this.inventoryDAO.create(inventory);
+  }
+  
+  /**
+   * Delete Inventory.
+   * @param id Inventory id to delete.
+   * @return Inventory.
+   */
+  @DeleteMapping
+  public Inventory delete(@RequestBody String id) {
+    return this.inventoryDAO.delete(id).orElse(null);
   }
 }
 
