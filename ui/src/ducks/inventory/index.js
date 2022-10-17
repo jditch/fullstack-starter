@@ -20,7 +20,7 @@ export const findInventory = createAction(actions.INVENTORY_GET_ALL, () =>
     .get(`${config.restAPIUrl}/inventory`)
     .then((suc) => {
       dispatch(refreshInventory(suc.data))
-      dispatch(openSuccess("INVENTORY_GET_ALL Success"))
+      dispatch(openSuccess("Retrieved all inventories"))
     })
 )
 
@@ -36,7 +36,7 @@ export const createInventory = createAction(actions.INVENTORY_CREATE, (inventory
       })
       invs.push(suc.data)
       dispatch(refreshInventory(invs))
-      dispatch(openSuccess("INVENTORY_CREATE Success"))
+      dispatch(openSuccess("Inventory created"))
     })
 )
 
@@ -51,7 +51,7 @@ export const removeInventory = createAction(actions.INVENTORY_DELETE, (id) =>
         }
       })
       dispatch(refreshInventory(invs))
-      dispatch(openSuccess("INVENTORY_DELETE Success"))
+      dispatch(openSuccess("Inventory deleted"))
     })
 )
 
