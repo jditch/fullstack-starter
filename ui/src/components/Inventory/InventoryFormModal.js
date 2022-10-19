@@ -22,7 +22,7 @@ class InventoryFormModal extends React.Component {
       handleDialog,
       handleInventory,
       title,
-      defaultValues,
+      initialValues,
       products,
       measurementUnits
     } = this.props
@@ -34,7 +34,7 @@ class InventoryFormModal extends React.Component {
         onClose={() => { handleDialog(false) }}
       >
         <Formik
-          initialValues={defaultValues}
+          initialValues={initialValues}
           onSubmit={values => {
             values.bestBeforeDate += 'T20:06:04.319Z'
             handleInventory(values)

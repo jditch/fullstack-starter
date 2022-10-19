@@ -164,15 +164,14 @@ const InventoryLayout = (props) => {
           isDialogOpen={isCreateOpen}
           handleDialog={toggleModals}
           handleInventory={createInventory}
-          initialValues={{}}
-          products={products}
-          measurementUnits={MeasurementUnits}
-          defaultValues={{
+          initialValues={{
             description: '',
             amount: 0,
             averagePrice:0,
             bestBeforeDate: moment(new Date()).format('YYYY-MM-DD')
           }}
+          products={products}
+          measurementUnits={MeasurementUnits}
         />
       </Grid>
     </Grid>
