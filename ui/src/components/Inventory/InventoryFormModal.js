@@ -13,7 +13,7 @@ import { Field, Form, Formik } from 'formik'
 
 const validateRequired = value => (value || typeof value === 'number' ? undefined : 'Required')
 const validatePositiveNumber = value => 
-  (value && (isNaN(Number(value)) || value<0) ? 'Must be a number above 0' : undefined)
+  (value === '' || isNaN(Number(value)) || value<0 ? 'Must be a number at least 0' : undefined)
 
 class InventoryFormModal extends React.Component {
   render() {
@@ -92,6 +92,7 @@ class InventoryFormModal extends React.Component {
                       label='Average Price'
                       component={TextField}
                       type='number'
+                      inputProps={{ min: 0}}
                       validate={validatePositiveNumber}
                     />
                   </Grid>
@@ -102,6 +103,7 @@ class InventoryFormModal extends React.Component {
                       label='Amount'
                       component={TextField}
                       type='number'
+                      inputProps={{ min: 0}}
                       validate={validatePositiveNumber}
                     />
                   </Grid>
@@ -131,7 +133,14 @@ class InventoryFormModal extends React.Component {
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
-                    <FormControlLabel control={<Checkbox/>} label="Never Expires" name = 'neverExpires'/>
+                    <Field
+                      custom={{ variant: 'outlined', fullWidth: true, }}
+                      as={FormControlLabel}
+                      control={<Checkbox />}
+                      name='neverExpires'
+                      label='Never Expires'
+                      type='checkbox'
+                    />
                   </Grid>
                 </Grid>
               </DialogContent>
