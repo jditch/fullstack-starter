@@ -102,4 +102,70 @@ public class InventoryDAOTest {
     Assert.assertFalse(deletedInventory.isPresent());
     Assert.assertEquals(1, this.inventoryDAO.findAll().size());
   }
+  
+  /**
+   * Test Retrieve method where the inventory with the ID to be retrieved exists
+   */
+  @Test
+  public void retrieveInventoryExists() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    Inventory createdInventory = this.inventoryDAO.create(inventory);
+    
+    Optional<Inventory> retrievedInventory = this.inventoryDAO.retrieve(createdInventory.getId());
+    
+    Assert.assertTrue(retrievedInventory.isPresent());
+  }
+  
+  /**
+   * Test Retrieve method where the inventory with the ID to be retrieved does not exist
+   */
+  @Test
+  public void retrieveInventoryNotExist() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    Inventory createdInventory = this.inventoryDAO.create(inventory);
+    
+    Optional<Inventory> retrievedInventory = this.inventoryDAO.retrieve("FakeID");
+    
+    Assert.assertFalse(retrievedInventory.isPresent());
+  }
+  
+  /**
+   * Test Update method where the inventory with the ID to be updated exists
+   * Depends on Retrieve method
+   */
+  @Test
+  public void updateInventoryExists() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    Inventory createdInventory = this.inventoryDAO.create(inventory);
+    
+    createdInventory.setName("New Name");
+    Optional<Inventory> updatedInventory = this.inventoryDAO.update(createdInventory.getId(), createdInventory);
+    
+    Assert.assertTrue(updatedInventory.isPresent());
+    Assert.assertEquals(createdInventory.getName(), updatedInventory.get().getName());
+  }
+  
+  /**
+   * Test Update method where the inventory with the ID to be updated does not exist
+   * Depends on Retrieve method
+   */
+  @Test
+  public void updateInventoryNotExist() {
+    Inventory inventory = new Inventory();
+    inventory.setName(NAME);
+    inventory.setProductType(PRODUCT_TYPE);
+    Inventory createdInventory = this.inventoryDAO.create(inventory);
+    
+    createdInventory.setName("New Name");
+    Optional<Inventory> updatedInventory = this.inventoryDAO.update("fakeID!", createdInventory);
+    
+    Assert.assertFalse(updatedInventory.isPresent());
+  }
+  
 }

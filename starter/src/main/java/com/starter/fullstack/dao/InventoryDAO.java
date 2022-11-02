@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.util.Assert;
 
 /**
@@ -64,8 +65,8 @@ public class InventoryDAO {
    * @return Found Inventory.
    */
   public Optional<Inventory> retrieve(String id) {
-    // TODO
-    return Optional.empty();
+    Query query = Query.query(Criteria.where("id").is(id));
+    return Optional.ofNullable(mongoTemplate.findOne(query, Inventory.class));
   }
 
   /**
@@ -75,8 +76,19 @@ public class InventoryDAO {
    * @return Updated Inventory.
    */
   public Optional<Inventory> update(String id, Inventory inventory) {
-    // TODO
-    return Optional.empty();
+    Query query = Query.query(Criteria.where("id").is(id));
+    Update update = new Update();
+    update.set("name", inventory.getName());
+    update.set("productType", inventory.getProductType());
+    update.set("description", inventory.getDescription());
+    update.set("averagePrice", inventory.getAveragePrice());
+    update.set("amount", inventory.getAmount());
+    update.set("unitOfMeasurement", inventory.getUnitOfMeasurement());
+    update.set("bestBeforeDate", inventory.getBestBeforeDate());
+    update.set("neverExpires", inventory.isNeverExpires());
+    
+    mongoTemplate.findAndModify(query, update, Inventory.class);
+    return retrieve(id);
   }
 
   /**

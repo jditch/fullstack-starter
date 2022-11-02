@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -110,6 +111,44 @@ public class InventoryControllerTest {
       .andExpect(status().isOk());
     
     Assert.assertEquals(1, this.mongoTemplate.findAll(Inventory.class).size());
+  }
+  
+  /**
+   * Test update endpoint where the inventory to be updated exists
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void updateInventoryExists() throws Throwable {
+    Inventory updatedInventory = new Inventory();
+    updatedInventory.setId(this.inventory.getId());
+    updatedInventory.setName("ALSO TEST");
+    updatedInventory.setProductType("TEST PRODUCT");
+    this.mockMvc.perform(put("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(this.objectMapper.writeValueAsString(updatedInventory)))
+      .andExpect(status().isOk());
+    
+    Assert.assertEquals(updatedInventory.getName(), this.mongoTemplate.findAll(Inventory.class).get(0).getName());
+  }
+  
+  /**
+   * Test update endpoint where the inventory to be updated does not exist
+   * @throws Throwable see MockMvc
+   */
+  @Test
+  public void updateInventoryNotExist() throws Throwable {
+    Inventory updatedInventory = new Inventory();
+    updatedInventory.setId("fakeID!");
+    updatedInventory.setName("ALSO TEST");
+    updatedInventory.setProductType("TEST PRODUCT");
+    this.mockMvc.perform(put("/inventory")
+        .accept(MediaType.APPLICATION_JSON)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(this.objectMapper.writeValueAsString(updatedInventory)))
+      .andExpect(status().isOk());
+    
+    Assert.assertEquals(this.inventory.getName(), this.mongoTemplate.findAll(Inventory.class).get(0).getName());
   }
 }
 

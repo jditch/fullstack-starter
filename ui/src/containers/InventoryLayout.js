@@ -47,10 +47,12 @@ const headCells = [
 const InventoryLayout = (props) => {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const inventory = useSelector(state => state.inventory.all)
+  const inventories = useSelector(state => state.inventory.all)
   const products = useSelector(state => state.products.all)
   const isFetched = useSelector(state => state.inventory.fetched && state.products.fetched)
-  const createInventory = useCallback(inventory => { dispatch(inventoryDuck.createInventory(inventory)) }, [dispatch])
+  const createInventory = useCallback(inventories => { dispatch(inventoryDuck.createInventory(inventories)) }, [dispatch])
+  const updateInventory = useCallback(inventories => { dispatch(inventoryDuck.updateInventory(inventories)) }, [dispatch])
+  
   useEffect(() => {
     if (!isFetched) {
       dispatch(inventoryDuck.findInventory())
@@ -58,18 +60,28 @@ const InventoryLayout = (props) => {
     }
   }, [dispatch, isFetched])
 
-
+  
   const [isCreateOpen, setCreateOpen] = React.useState(false)
+  const [isEditOpen, setEditOpen] = React.useState(false)
   
   const toggleCreate = () => {
     setCreateOpen(true)
   }
   
-  const toggleModals = (resetChecked) => {
-    setCreateOpen(false)
+  const toggleEdit = () => {
+    setEditOpen(true)
   }
   
-  const normalizedInventory = normalizeInventory(inventory)
+  const toggleModals = (resetSelected) => {
+    setCreateOpen(false)
+    setEditOpen(false)
+    if (resetSelected) {
+      setSelected([])
+    }
+  }
+  
+  
+  const normalizedInventory = normalizeInventory(inventories)
   const [order, setOrder] = React.useState('asc')
   const [orderBy, setOrderBy] = React.useState('calories')
   const [selected, setSelected] = React.useState([])
@@ -88,7 +100,7 @@ const InventoryLayout = (props) => {
     }
     setSelected([])
   }
-
+  
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id)
     let newSelected = []
@@ -109,6 +121,12 @@ const InventoryLayout = (props) => {
 
   const isSelected = (id) => selected.indexOf(id) !== -1
 
+  const firstSelectedInventoryValues = inventories.filter(inventory => inventory.id===selected[0])[0]
+  if (selected.length !== 0) {
+    firstSelectedInventoryValues.bestBeforeDate=
+      moment(firstSelectedInventoryValues.bestBeforeDate).format('YYYY-MM-DD')
+  }
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -116,6 +134,7 @@ const InventoryLayout = (props) => {
           numSelected={selected.length} 
           title='Inventory'
           toggleCreate={toggleCreate}
+          toggleEdit={toggleEdit}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -158,6 +177,17 @@ const InventoryLayout = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
+        <InventoryFormModal
+          title='Edit'
+          formName='inventoryEdit'
+          isDialogOpen={isEditOpen}
+          handleDialog={toggleModals}
+          handleInventory={updateInventory}
+          initialValues={firstSelectedInventoryValues}
+          products={products}
+          measurementUnits={MeasurementUnits}
+          
+        />
         <InventoryFormModal
           title='Create'
           formName='inventoryCreate'
