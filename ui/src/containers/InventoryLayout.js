@@ -13,6 +13,7 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableRow from '@material-ui/core/TableRow'
 import { EnhancedTableHead, EnhancedTableToolbar, getComparator, stableSort } from '../components/Table'
 import InventoryFormModal from '../components/Inventory/InventoryFormModal'
+import InventoryDeleteModal from '../components/Inventory/InventoryDeleteModal'
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -50,8 +51,9 @@ const InventoryLayout = (props) => {
   const inventories = useSelector(state => state.inventory.all)
   const products = useSelector(state => state.products.all)
   const isFetched = useSelector(state => state.inventory.fetched && state.products.fetched)
-  const createInventory = useCallback(inventories => { dispatch(inventoryDuck.createInventory(inventories)) }, [dispatch])
-  const updateInventory = useCallback(inventories => { dispatch(inventoryDuck.updateInventory(inventories)) }, [dispatch])
+  const createInventory = useCallback(inventory => { dispatch(inventoryDuck.createInventory(inventory)) }, [dispatch])
+  const updateInventory = useCallback(inventory => { dispatch(inventoryDuck.updateInventory(inventory)) }, [dispatch])
+  const removeInventory = useCallback(inventory => { dispatch(inventoryDuck.removeInventory(inventory)) }, [dispatch])
   
   useEffect(() => {
     if (!isFetched) {
@@ -60,26 +62,26 @@ const InventoryLayout = (props) => {
     }
   }, [dispatch, isFetched])
 
-  
   const [isCreateOpen, setCreateOpen] = React.useState(false)
   const [isEditOpen, setEditOpen] = React.useState(false)
-  
+  const [isDeleteOpen, setDeleteOpen] = React.useState(false)
   const toggleCreate = () => {
     setCreateOpen(true)
   }
-  
   const toggleEdit = () => {
     setEditOpen(true)
   }
-  
+   const toggleDelete = () => {
+    setDeleteOpen(true)
+  }
   const toggleModals = (resetSelected) => {
     setCreateOpen(false)
     setEditOpen(false)
+    setDeleteOpen(false)
     if (resetSelected) {
       setSelected([])
     }
   }
-  
   
   const normalizedInventory = normalizeInventory(inventories)
   const [order, setOrder] = React.useState('asc')
@@ -135,6 +137,7 @@ const InventoryLayout = (props) => {
           title='Inventory'
           toggleCreate={toggleCreate}
           toggleEdit={toggleEdit}
+          toggleDelete={toggleDelete}
         />
         <TableContainer component={Paper}>
           <Table size='small' stickyHeader>
@@ -202,6 +205,12 @@ const InventoryLayout = (props) => {
           }}
           products={products}
           measurementUnits={MeasurementUnits}
+        />
+        <InventoryDeleteModal
+          isDialogOpen={isDeleteOpen}
+          handleDelete={removeInventory}
+          handleDialog={toggleModals}
+          initialValues={selected}
         />
       </Grid>
     </Grid>
