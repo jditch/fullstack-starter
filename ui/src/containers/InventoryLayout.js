@@ -95,7 +95,7 @@ const InventoryLayout = (props) => {
   }
 
   const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
+    if (selected.length === 0) {
       const newSelected = normalizedInventory.map((row) => row.id)
       setSelected(newSelected)
       return
